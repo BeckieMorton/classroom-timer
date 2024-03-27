@@ -1,5 +1,13 @@
 import React from "react";
+import { Button } from "../../UI/Button";
 
 export const Landing = () => {
-  return <div>Landing</div>;
+  return (
+    <div>
+      <h3>landing</h3>
+      <p>
+        <Button routeLocation={"TimerPage"}>Simple Timer</Button>
+      </p>
+    </div>
+  );
 };
