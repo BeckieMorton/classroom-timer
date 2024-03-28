@@ -3,58 +3,85 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export const SimpleTimer = () => {
-  const [pause, setPause] = useState(false);
-  const [num, setNum] = useState(10);
+  const [start, setStart] = useState(false);
+  const [time, setTime] = useState(10);
 
-  let intervalRef = useRef();
-
-  const decreaseNum = () => {
-    setNum((prev) => {
-      if (prev > 0) {
-        return prev - 1;
-      } else {
-        clearInterval(intervalRef.current);
-        return 0;
-      }
-    });
-  };
-
-  const startTimer = () => {
-    intervalRef.current = setInterval(decreaseNum, 1000);
-  };
+  let seconds = ("0" + (Math.floor((time / 1000) % 60) % 60)).slice(-2);
+  let minutes = ("0" + Math.floor((time / 60000) % 60)).slice(-2);
+  let hours = ("0" + Math.floor((time / 3600000) % 60)).slice(-2);
 
   useEffect(() => {
-    if (!pause) {
-      startTimer();
-    }
-    return () => clearInterval(intervalRef.current);
-  }, [pause]);
-
-  const toggleTimer = () => {
-    if (!pause) {
-      clearInterval(intervalRef.current);
+    let interval = null;
+    if (start) {
+      interval = setInterval(() => {
+        if (time > 0) {
+          setTime((prevTime) => prevTime - 10);
+        }
+      }, 10);
     } else {
-      intervalRef.current = setInterval(decreaseNum, 1000);
+      clearInterval(interval);
     }
-    setPause((prev) => !prev);
-  };
+    return () => {
+      clearInterval(interval);
+    };
+  }, [start]);
 
-  const resetTimer = () => {
-    setNum(10);
-  };
+  function adjustTimer(input) {
+    if (!start) {
+      switch (input) {
+        case "incHours":
+          setTime((prevTime) => prevTime + 3600000);
+          break;
+        case "incMinutes":
+          setTime((prevTime) => prevTime + 60000);
+          break;
+        case "incSeconds":
+          setTime((prevTime) => prevTime + 1000);
+          break;
+        case "decHours":
+          setTime((prevTime) => prevTime - 3600000);
+        case "decMinutes":
+          setTime((prevTime) => prevTime - 60000);
+          break;
+        case "decSeconds":
+          setTime((prevTime) => prevTime - 1000);
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
   return (
     <div>
-      <h3>Simple Counter</h3>
-      <p>Count down from: </p>
-      <input value={num} placeholder="enter number here" type="number" />
-      <p>{num}</p>
-      <button onClick={toggleTimer}>{pause ? "Start" : "Stop"}</button>
-      <button onClick={resetTimer}>Reset</button>
-      <button onCLick={startTimer}>Start </button>
-      <Link to="/">
-        <span>Home</span>
-      </Link>
+      <div className="App">
+        <button onClick={() => adjustTimer("incHours")}>&#8679;</button>
+        <button onClick={() => adjustTimer("incMinutes")}>&#8679;</button>
+        <button onClick={() => adjustTimer("incSeconds")}>&#8679;</button>
+        <div>
+          {hours} : {minutes} : {seconds}
+        </div>
+        <button onClick={() => adjustTimer("decHours")}>&#8681;</button>
+        <button onClick={() => adjustTimer("decMinutes")}>&#8681;</button>
+        <button onClick={() => adjustTimer("decSeconds")}>&#8681;</button>{" "}
+        <br />
+        <br />
+        <button onClick={() => setStart(true)}>Start</button>
+        <button onClick={() => setStart(false)}>Stop</button>
+        <button
+          onClick={() => {
+            setStart(false);
+            setTime(0);
+          }}
+        >
+          Reset
+        </button>
+      </div>
+      <div>
+        <Link to="/">
+          <span>Home</span>
+        </Link>
+      </div>
     </div>
   );
 };

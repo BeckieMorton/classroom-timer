@@ -7,6 +7,7 @@ export const Landing = () => {
       <h3>landing</h3>
       <p>
         <Button routeLocation={"TimerPage"}>Simple Timer</Button>
+        <Button routeLocation={"StopwatchPage"}>Stopwatch</Button>
       </p>
     </div>
   );
